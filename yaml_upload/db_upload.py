@@ -50,5 +50,3 @@ dict_insert = {"parkingLotName" : parking_lot_name,
 # Insert into the bbox_ref collection
 x = collection_name.insert_one(dict_insert)
 
-#TODO: have to save the bounding box coordinates in the same way as used in computer vision
-#TODO: count number of documents and set modID to count+1
