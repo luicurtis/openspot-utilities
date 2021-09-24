@@ -51,10 +51,3 @@ dict_insert = {"parkingLotName" : parking_lot_name,
 
 # Insert into the bbox_ref collection
 x = collection_name.insert_one(dict_insert)
-
-
-
-#modID:0
-#spotNum:0
-#occupied:false
-#parkingLotName
