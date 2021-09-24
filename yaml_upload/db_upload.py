@@ -5,6 +5,7 @@ import yaml
 my_client = pymongo.MongoClient("mongodb+srv://root:root@cluster0.56jzb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db_name = my_client["Backend"]
 collection_name = db_name["bbox_ref"]
+spots_db = db_name["spots"]
 count = collection_name.count_documents({})
 
 #find the yaml file that was generated when bounding boxes were designed
@@ -37,10 +38,11 @@ parsed_ref = yaml.load(ref_yaml_file, Loader=yaml.FullLoader)
 
 refSpots = []
 #upload the coordinates used by the computer vision
-for bbox in parsed_ref:
+for spotnum, bbox in enumerate(parsed_ref):
     coord = bbox["coordinates"]
     newSpot = ([coord[0][1], coord[0][0]], [coord[2][1], coord[2][0]])
     refSpots.append(newSpot)
+    spots_db.insert_one({"modID" : modID+1, "spotNum" : spotnum, "occupied" : False, "parkingLotName":parking_lot_name})
 
 dict_insert = {"parkingLotName" : parking_lot_name,
                "modID" : modID + 1,
@@ -50,3 +52,9 @@ dict_insert = {"parkingLotName" : parking_lot_name,
 # Insert into the bbox_ref collection
 x = collection_name.insert_one(dict_insert)
 
+
+
+#modID:0
+#spotNum:0
+#occupied:false
+#parkingLotName
