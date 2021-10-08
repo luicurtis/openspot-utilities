@@ -4,10 +4,10 @@
 
 
 from pathlib import Path
-
-# from tkinter import *
+import os
+from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, ttk, filedialog
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -17,6 +17,11 @@ ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+# TODO: Call DB functions
+# - get all parking lot names
+# - get list of mod ids that exist
+# { "SFU" : [1,2,4,423,3]}
+parkingLots = ["sfu", "kensignton"]
 
 window = Tk()
 
@@ -35,6 +40,8 @@ canvas = Canvas(
 )
 
 canvas.place(x = 0, y = 0)
+
+# background
 canvas.create_rectangle(
     0.0,
     0.0,
@@ -43,6 +50,7 @@ canvas.create_rectangle(
     fill="#FFFFFF",
     outline="")
 
+# Label
 canvas.create_text(
     215.0,
     237.0,
@@ -52,6 +60,7 @@ canvas.create_text(
     font=("Roboto", 64 * -1)
 )
 
+# Label
 canvas.create_text(
     215.0,
     101.0,
@@ -61,6 +70,7 @@ canvas.create_text(
     font=("Roboto", 64 * -1)
 )
 
+# Label
 canvas.create_text(
     229.0,
     360.0,
@@ -70,6 +80,7 @@ canvas.create_text(
     font=("Roboto", 64 * -1)
 )
 
+# Label
 canvas.create_text(
     215.0,
     483.0,
@@ -79,6 +90,19 @@ canvas.create_text(
     font=("Roboto", 64 * -1)
 )
 
+# TODO: Drop down menu for selecting parking lot
+variable = StringVar(window)
+variable.set("Select a Parking Lot") # default value
+
+
+w = OptionMenu(
+    window, 
+    variable, 
+    *parkingLots
+)
+w.pack() # TODO: update with .place() to put it in correct place
+
+# Text Input for Mod Number
 entry_image_1 = PhotoImage(
     file=relative_to_assets("entry_1.png"))
 entry_bg_1 = canvas.create_image(
@@ -98,13 +122,37 @@ entry_1.place(
     height=73.0
 )
 
+# Select image file
+def open_file():
+   file = filedialog.askopenfile(mode='r', filetypes=[('Image File', '*.png')])
+   if file:
+      filepath = os.path.abspath(file.name)
+      Label(window, text="The File is located at : " + str(filepath), font=('Aerial 11')).pack()
+
+# Add a Label widget
+label = Label(window, text="Click the Button to browse the Files", font=('Georgia 13'))
+label.pack(pady=10)
+
+# Create a Button
+ttk.Button(window, text="Browse", command=open_file).pack(pady=20)
+
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))
 button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=lambda: {
+        # TODO: Error checking for inputs
+        # - parking lot selected
+        # - put a warning popup if module already has existing bboxes in db
+        # - file is jpg or something idk
+        
+        # TODO: Call function from different files
+        print("button_1 clicked"),
+        print("here"),
+        print(entry_1.get())
+    },
     relief="flat"
 )
 button_1.place(
@@ -114,4 +162,5 @@ button_1.place(
     height=80.0
 )
 window.resizable(False, False)
+
 window.mainloop()
