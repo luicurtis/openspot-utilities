@@ -10,8 +10,7 @@ class database:
         self.spots_db = self.db_name["spots"]
         self.module_db = self.db_name["module"]
         self.parkinglotInfo = {}
-        # TODO: build dict of parking lot info (DONE)
-        # { "SFU" : [1,2,4,423,3]}
+
         for parking_lot_names in self.module_db.find():
             parking_lot_name = parking_lot_names["parkingLotName"]
             self.parkinglotInfo.setdefault(parking_lot_name, [])
