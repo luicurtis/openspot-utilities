@@ -5,6 +5,7 @@
 import os
 
 from database import database
+from bbox import DrawBBoxes
 from pathlib import Path
 from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -144,7 +145,7 @@ imgFile = Button(window, text="Browse", command=open_file).pack(pady=20)
 def submitForm():
     inputVals['parkingLotName'] = pLotSelection.get()
     inputVals['modNum'] = modNum.get()
-
+    exists = False
     # print(inputVals['parkingLotName'])
     # print(inputVals['modNum'])
     # print(inputVals['imgPath'])
@@ -173,9 +174,10 @@ def submitForm():
                                         icon='warning')
         if not popupAns:
             return
+        exists = True
 
     # check if the mod number is greater than the max mod num
-    print(db.get_mod_ids(inputVals['parkingLotName']))
+    # print(db.get_mod_ids(inputVals['parkingLotName']))
     if int(inputVals['modNum']) > max(db.get_mod_ids(inputVals['parkingLotName']))+1:
         popupAns = messagebox.askokcancel("Unexpected Module Number", 
                                         "!!! WARNING !!! \n \"%s\" Mod ID is greater than what was expected.\n \
@@ -189,7 +191,12 @@ def submitForm():
     if inputVals['imgPath'] == "":
         messagebox.showerror("No File Selected", "ERROR: No file was selected. \n Please select a .jpg file.")
         return
+
     # TODO: Call bounding box stuff XD
+    DrawBBoxes(inputVals['imgPath'])
+
+    # upload coords to db
+    db.upload_bounding_boxes("yaml_upload/coords.yml", inputVals['parkingLotName'], int(inputVals['modNum']), exists)
 
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))

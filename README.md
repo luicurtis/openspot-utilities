@@ -10,3 +10,9 @@ Takes the yaml file name and the parkinglot name in order to place the appropria
 in the correct database
 
 Activate Virtual Environment: source venv/bin/activate
+
+# packages downloaded
+- tkinter
+- pymongo
+- pyyaml
+- opencv-python

@@ -34,7 +34,7 @@ class database:
     #yaml_file_path = path to yaml file
     #parking_lot_name = parking lot name 
     #modID = modID of the newly installed module
-    def upload_bounding_boxes(self, yaml_file_path, parking_lot_name, modID):
+    def upload_bounding_boxes(self, yaml_file_path, parking_lot_name, modID, exist=False):
         # ref_yaml_file = open("./yaml_files/" + file_name)
         ref_yaml_file = open(yaml_file_path)
         parsed_ref = yaml.load(ref_yaml_file, Loader=yaml.FullLoader)
@@ -45,13 +45,17 @@ class database:
             coord = bbox["coordinates"]
             newSpot = ([coord[0][1], coord[0][0]], [coord[2][1], coord[2][0]])
             refSpots.append(newSpot)
-            self.spots_db.insert_one({"modID" : modID, "spotNum" : spotnum, "occupied" : False, "parkingLotName":parking_lot_name})
+            self.spots_db.update_one({"modID" : modID, "spotNum" : spotnum, "parkingLotName":parking_lot_name},
+                                    {"$set":{"modID" : modID, "spotNum" : spotnum, "occupied" : False, "parkingLotName":parking_lot_name}}, 
+                                    upsert=True)
 
         dict_insert = {"parkingLotName" : parking_lot_name,
                         "modID" : modID,
                         "mapping" : refSpots}
-
-        self.bbox_db.insert_one(dict_insert)       
+        
+        self.bbox_db.update_one({"parkingLotName" : parking_lot_name, "modID" : modID},
+                                {"$set":dict_insert}, 
+                                upsert=True)       
     
 
 # #how to use the class, examples.
