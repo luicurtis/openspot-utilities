@@ -142,7 +142,7 @@ label.pack(pady=10)
 imgFile = Button(window, text="Browse", command=open_file).pack(pady=20)
 
 
-def submitForm():
+def drawBboxForm():
     inputVals['parkingLotName'] = pLotSelection.get()
     inputVals['modNum'] = modNum.get()
     exists = False
@@ -166,26 +166,26 @@ def submitForm():
                             icon='error')
         return
 
-    # check if module already exists
-    if int(inputVals['modNum']) in db.get_mod_ids(inputVals['parkingLotName']):
-        print("ustoopid")
-        popupAns = messagebox.askokcancel("Warning for Updating Module that Already Exists", 
-                                        "!!! WARNING !!! \n \"%s\" is already registered in the database \n Click OK to continue" %inputVals['modNum'],
-                                        icon='warning')
-        if not popupAns:
-            return
-        exists = True
+    # # check if module already exists
+    # if int(inputVals['modNum']) in db.get_mod_ids(inputVals['parkingLotName']):
+    #     print("ustoopid")
+    #     popupAns = messagebox.askokcancel("Warning for Updating Module that Already Exists", 
+    #                                     "!!! WARNING !!! \n \"%s\" is already registered in the database \n Click OK to continue" %inputVals['modNum'],
+    #                                     icon='warning')
+    #     if not popupAns:
+    #         return
+    #     exists = True
 
     # check if the mod number is greater than the max mod num
     # print(db.get_mod_ids(inputVals['parkingLotName']))
-    if int(inputVals['modNum']) > max(db.get_mod_ids(inputVals['parkingLotName']))+1:
-        popupAns = messagebox.askokcancel("Unexpected Module Number", 
-                                        "!!! WARNING !!! \n \"%s\" Mod ID is greater than what was expected.\n \
-                                        \n Expected Val: %s \n\n If you are installing modules out of order click OK to continue" \
-                                        %(inputVals['modNum'], max(db.get_mod_ids(inputVals['parkingLotName']))+1),
+    if int(inputVals['modNum']) > max(db.get_mod_ids(inputVals['parkingLotName'])):
+        messagebox.showerror("Unexpected Module Number", 
+                                        "!!! WARNING !!! \n Mod ID \"%s\" is greater than what was expected.\n \
+                                        \n Expected Value(s) in the range of: \n %s to %s "\
+                                        %(inputVals['modNum'], min(db.get_mod_ids(inputVals['parkingLotName'])), max(db.get_mod_ids(inputVals['parkingLotName']))),
                                         icon='warning')
-        if not popupAns:
-            return
+        return
+
 
     # check if there is a file indicated
     if inputVals['imgPath'] == "":
@@ -195,19 +195,46 @@ def submitForm():
     # TODO: Call bounding box stuff XD
     DrawBBoxes(inputVals['imgPath'])
 
-    # upload coords to db
-    db.upload_bounding_boxes("yaml_upload/coords.yml", inputVals['parkingLotName'], int(inputVals['modNum']), exists)
 
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))
-button_1 = Button(
+drawBboxbutton = Button(
+    image=button_image_1,
+    borderwidth=0,
+    highlightthickness=0,
+    command=drawBboxForm,
+    relief="flat"
+)
+drawBboxbutton.place(
+    x=50.0,
+    y=610.0,
+    width=286.0,
+    height=80.0
+)
+
+def submitForm():
+    # send data to database
+    # check if yml file exists
+    if os.path.isfile("yaml_upload/coords.yml"):
+        print("submitting form")
+        # upload coords to db
+        db.upload_bounding_boxes("yaml_upload/coords.yml", inputVals['parkingLotName'], int(inputVals['modNum']))
+        os.remove("yaml_upload/coords.yml")
+        messagebox.showerror("Submit Successful", "Success!\n Coordinates uploaded to database.",
+                    icon='info')
+        
+    else:
+        messagebox.showerror("No coordinates found", "ERROR: No bounding boxes found. \n \n Please click the button 'Draw Bounding Boxes' to create coordinates file",
+                            icon='error')
+
+submit = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
     command=submitForm,
     relief="flat"
 )
-button_1.place(
+submit.place(
     x=922.0,
     y=610.0,
     width=286.0,
