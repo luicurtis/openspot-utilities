@@ -57,90 +57,186 @@ canvas.create_rectangle(
     fill="#FFFFFF",
     outline="")
 
-# Label
+# OpenSpot Logo
+openspot_logo = PhotoImage(
+    file=relative_to_assets("openspot_logo.png"))
+canvas.create_image(
+    62, 
+    40, 
+    image=openspot_logo, 
+    anchor=NW)
+
+# Set up software title
 canvas.create_text(
-    215.0,
-    237.0,
+    539.0,
+    65.0,
+    anchor="nw",
+    text="Module Set up Software",
+    fill="#5A5959",
+    font=("Roboto Medium", 58 * -1, 'bold')
+)
+
+# Parking Lot Selection Text Label
+canvas.create_text(
+    126,
+    195,
     anchor="nw",
     text="Parking Lot:",
-    fill="#000000",
-    font=("Roboto", 64 * -1)
+    fill="#5A5A5A",
+    font=("Roboto", 52),
+    justify=RIGHT,
 )
 
-# Label
+# Module Number Input Text Label
 canvas.create_text(
-    215.0,
-    101.0,
-    anchor="nw",
-    text="OPENSPOT",
-    fill="#000000",
-    font=("Roboto", 64 * -1)
-)
-
-# Label
-canvas.create_text(
-    229.0,
-    360.0,
+    126,
+    285,
     anchor="nw",
     text="Module #:",
-    fill="#000000",
-    font=("Roboto", 64 * -1)
+    fill="#5A5A5A",
+    font=("Roboto", 52),
+    justify=RIGHT
 )
 
-# Label
+# Picture File Selection Text Label
 canvas.create_text(
-    215.0,
-    483.0,
+    126,
+    376,
     anchor="nw",
     text="Picture File:",
-    fill="#000000",
-    font=("Roboto", 64 * -1)
+    fill="#5A5A5A",
+    font=("Roboto", 52),
+    justify=RIGHT
 )
 
-# TODO: Drop down menu for selecting parking lot
+# Bouding Box Button Text Label
+canvas.create_text(
+    126,
+    467,
+    anchor="nw",
+    text="Bounding Box:",
+    fill="#5A5A5A",
+    font=("Roboto", 52),
+    justify=RIGHT
+)
+
+inputBorder = PhotoImage(
+    file=relative_to_assets("input_border.png"))
+
+# Drop down menu for selecting parking lot
+entry_bg_3 = canvas.create_image(
+    856.5,
+    229.5,
+    image=inputBorder
+)
 pLotSelection = StringVar(window)
 pLotSelection.set("Select a Parking Lot") # default value
 pLotDropDown = OptionMenu(
     window, 
     pLotSelection, 
-    *parkingLots
+    *parkingLots,
 )
-pLotDropDown.pack() # TODO: update with .place() to put it in correct place
+pLotDropDown.config(
+    direction='flush',
+    font=("Roboto", 32),
+    justify="center",
+    width=585,
+    height=67-5,
+    bg='white',
+    bd=0
+)
+pLotDropDown.place(
+    x=564.0,
+    y=195.0+5,
+    width=585.0,
+    height=67-5
+)
+
+def handle_focus_in(_):
+    if len(modNum.get()) == 0 or modNum.get() == "Enter a Positive Integer Value":
+        modNum.delete(0, END)
+        modNum.config(fg='black')
+
+def handle_focus_out(_):
+    if len(modNum.get()) == 0:
+        modNum.delete(0, END)
+        modNum.config(fg='grey')
+        modNum.insert(0, "Enter a Positive Integer Value")
+
+def handle_enter(txt):
+    print(modNum.get())
+    handle_focus_out('dummy')
 
 # Text Input for Mod Number
-entry_image_1 = PhotoImage(
-    file=relative_to_assets("entry_1.png"))
-entry_bg_1 = canvas.create_image(
-    963.0,
-    397.5,
-    image=entry_image_1
+moduleNumberBorder = canvas.create_image(
+    856.5,
+    319.5,
+    image=inputBorder
 )
 modNum = Entry(
     bd=0,
-    bg="#B886EA",
+    font=("Roboto", 32),
+    justify="center",
+    # bg="#000000",
+    fg='grey',
     highlightthickness=0
 )
+modNum.insert(
+    0, 
+    "Enter a Positive Integer Value"
+)
+modNum.bind("<FocusIn>", handle_focus_in)
+modNum.bind("<FocusOut>", handle_focus_out)
+modNum.bind("<Return>", handle_enter)
 modNum.place(
-    x=718.0,
-    y=360.0,
-    width=490.0,
-    height=73.0
+    x=564.0,
+    y=290.0,
+    width=585.0,
+    height=60.0
 )
 
-# Select image file
 def open_file():
     file = filedialog.askopenfile(mode='r', filetypes=[('Image File', '*.jpg')])
     if file:
         inputVals['imgPath'] = os.path.abspath(file.name)
-        Label(window, text="The File is located at : " + str(inputVals['imgPath']), font=('Aerial 11')).pack()
+        imgFilelabel['text']= "Current File: %s" %(inputVals['imgPath'])
+        # Label(window, text="The File is located at : " + str(inputVals['imgPath']), font=('Aerial 11')).pack()
 
-# Add a Label widget
-label = Label(window, text="Click the Button to browse the Files", font=('Georgia 13'))
-label.pack(pady=10)
-
-# Create a Button
-imgFile = Button(window, text="Browse", command=open_file).pack(pady=20)
-
+# # Add a Label widget
+imgFilelabel = Label(
+    window, 
+    text="Click the Button to browse the Files", 
+    font=("Roboto", 14),
+    fg='grey'
+)
+imgFilelabel.place(
+    x=564.0,
+    y=376.0+35,
+    width=585.0,
+    height=25
+)
+# Select image file
+imgSelectionimg = canvas.create_image(
+    856.5,
+    410.5,
+    image=inputBorder
+)
+imgFilebutton = Button(
+    window, 
+    text="Browse",
+    font=("Roboto", 18),
+    justify="center",
+    command=open_file,
+    bd=0,
+    highlightthickness=0,
+    borderwidth=0,
+)
+imgFilebutton.place(
+    x=564.0,
+    y=376.0+5,
+    width=585.0,
+    height=25
+)
 
 def drawBboxForm():
     inputVals['parkingLotName'] = pLotSelection.get()
@@ -195,21 +291,23 @@ def drawBboxForm():
     # TODO: Call bounding box stuff XD
     DrawBBoxes(inputVals['imgPath'])
 
-
-button_image_1 = PhotoImage(
-    file=relative_to_assets("button_1.png"))
-drawBboxbutton = Button(
-    image=button_image_1,
+# Draw BBox button
+bboxButtonimg = PhotoImage(
+    file=relative_to_assets("draw_bbox_button.png"))
+bboxButton = Button(
+    image=bboxButtonimg,
     borderwidth=0,
     highlightthickness=0,
+    highlightbackground='white',
     command=drawBboxForm,
-    relief="flat"
+    relief="flat",
+    bd=0
 )
-drawBboxbutton.place(
-    x=50.0,
-    y=610.0,
-    width=286.0,
-    height=80.0
+bboxButton.place(
+    x=539.0,
+    y=467.0,
+    width=635.0,
+    height=69.0
 )
 
 def submitForm():
@@ -226,20 +324,22 @@ def submitForm():
     else:
         messagebox.showerror("No coordinates found", "ERROR: No bounding boxes found. \n \n Please click the button 'Draw Bounding Boxes' to create coordinates file",
                             icon='error')
-
-submit = Button(
-    image=button_image_1,
+# Submit Button
+submitButtonimg = PhotoImage(
+    file=relative_to_assets("submit_button.png"))
+submitButton = Button(
+    image=submitButtonimg,
     borderwidth=0,
     highlightthickness=0,
     command=submitForm,
     relief="flat"
 )
-submit.place(
-    x=922.0,
-    y=610.0,
-    width=286.0,
-    height=80.0
+submitButton.place(
+    x=116.0,
+    y=608.0,
+    width=1058.0,
+    height=60.0
 )
-window.resizable(False, False)
 
+window.resizable(False, False)
 window.mainloop()
