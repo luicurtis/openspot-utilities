@@ -153,7 +153,7 @@ pLotDropDown.place(
 )
 
 def handle_focus_in(_):
-    if len(modNum.get()) == 0 or modNum.get() == "Enter a Positive Integer Value":
+    if len(modNum.get()) == 0 or modNum.get() == "Enter the Module Number":
         modNum.delete(0, END)
         modNum.config(fg='black')
 
@@ -161,7 +161,7 @@ def handle_focus_out(_):
     if len(modNum.get()) == 0:
         modNum.delete(0, END)
         modNum.config(fg='grey')
-        modNum.insert(0, "Enter a Positive Integer Value")
+        modNum.insert(0, "Enter the Module Number")
 
 def handle_enter(txt):
     print(modNum.get())
@@ -183,7 +183,7 @@ modNum = Entry(
 )
 modNum.insert(
     0, 
-    "Enter a Positive Integer Value"
+    "Enter the Module Number"
 )
 modNum.bind("<FocusIn>", handle_focus_in)
 modNum.bind("<FocusOut>", handle_focus_out)
