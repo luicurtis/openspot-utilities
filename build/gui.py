@@ -114,7 +114,7 @@ canvas.create_text(
     126,
     467,
     anchor="nw",
-    text="Bounding Box:",
+    text="Bounding Boxes:",
     fill="#5A5A5A",
     font=("Roboto", 52),
     justify=RIGHT
