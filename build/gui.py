@@ -205,8 +205,8 @@ def open_file():
 # # Add a Label widget
 imgFilelabel = Label(
     window, 
-    text="Click the Button to browse the Files", 
-    font=("Roboto", 14),
+    text="Click Browse to select the reference image", 
+    font=("Roboto", 18),
     fg='grey'
 )
 imgFilelabel.place(
@@ -249,7 +249,7 @@ def drawBboxForm():
     # error checking
     # invalid parking lot name
     if not inputVals['parkingLotName'] in parkingLots:
-        messagebox.showerror("Invalid Parking Lot Selected", "\"%s\" is not a valid parking lot, select one in the drop down menu :)" %inputVals['parkingLotName'])
+        messagebox.showerror("Invalid Parking Lot Selected", "ERROR:\n \"%s\" is not a valid parking lot.\n Select one from the drop down menu" %inputVals['parkingLotName'])
         return
 
     # check validity of module number
@@ -258,7 +258,7 @@ def drawBboxForm():
         if int(inputVals['modNum']) < 0:
             raise ValueError
     except ValueError:
-        messagebox.showerror("Invalid Module Number", "ERROR: \"%s\" is not a valid module number\n Please enter a positive integer" %inputVals['modNum'],
+        messagebox.showerror("Invalid Module Number", "ERROR:\n \"%s\" is not a valid module number.\n Please enter a positive integer" %inputVals['modNum'],
                             icon='error')
         return
 
