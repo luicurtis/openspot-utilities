@@ -14,10 +14,13 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, ttk, filedialog
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
-
+YAML_PATH = OUTPUT_PATH / Path("./yaml_upload")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
+def relative_to_yaml(path: str) -> Path:
+    return YAML_PATH / Path(path)
 
 # Initialize Database and fetch values
 db = database()
@@ -313,11 +316,11 @@ bboxButton.place(
 def submitForm():
     # send data to database
     # check if yml file exists
-    if os.path.isfile("yaml_upload/coords.yml"):
+    if os.path.isfile(relative_to_yaml("coords.yml")):
         print("submitting form")
         # upload coords to db
-        db.upload_bounding_boxes("yaml_upload/coords.yml", inputVals['parkingLotName'], int(inputVals['modNum']))
-        os.remove("yaml_upload/coords.yml")
+        db.upload_bounding_boxes(relative_to_yaml("coords.yml"), inputVals['parkingLotName'], int(inputVals['modNum']))
+        os.remove(relative_to_yaml("coords.yml"))
         messagebox.showerror("Submit Successful", "Success!\n Coordinates uploaded to database.",
                     icon='info')
         

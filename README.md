@@ -11,6 +11,8 @@ in the correct database
 
 Activate Virtual Environment: source venv/bin/activate
 
+Packaging into exe: ``` pyinstaller --add-data 'assets/*.png:assets' --add-data 'yaml_upload/:yaml_upload' -F gui.py ```
+
 # packages downloaded
 - tkinter
 - pymongo
