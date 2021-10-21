@@ -11,10 +11,13 @@ in the correct database
 
 Activate Virtual Environment: source venv/bin/activate
 
-Packaging into exe: ``` pyinstaller --add-data 'assets/*.png:assets' --add-data 'yaml_upload/:yaml_upload' -F gui.py ```
+Packaging build into exe: ``` pyinstaller --add-data 'assets/*.png:assets' --add-data 'yaml_upload/:yaml_upload' -F gui.py ```
 
-# packages downloaded
+# EXE packages downloaded
 - tkinter
 - pymongo
 - pyyaml
 - opencv-python
+
+# Planning Software downloaded libraries
+- pykml
