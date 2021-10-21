@@ -25,15 +25,25 @@ with open(kml_file) as f:
         for spot in module.Placemark:
             spotID = spot.name.text
             print('spotID: ' + spotID)
-            spotCoords = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split([',', '\n'])
-            # spotCoords.split('\n')
-            print(spotCoords)
-            print(type(spotCoords))
-            print(len(spotCoords))
+            spotCoords = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split('\n')
 
+            # clean up parsed data
+            # remove first and last index since it is empty text
+            spotCoords.pop(0)
+            spotCoords.pop(5)
 
-        # for 
-    # for e in doc.Document.Folder.Placemark:
-        # print(e)
-        # coor = e.Point.coordinates.text.split(',')
-        # print(coor)
+            parsedCoords = []
+            for i,coord in enumerate(spotCoords):
+                splitCoord = coord.strip().split(',')
+                splitCoord.pop(2) # remove useless 0
+                parsedCoords.append({
+                    'long': splitCoord[0],  # first element is long
+                    'lat': splitCoord[1]    # second element is lat
+                })
+                # splittedCoord = strippedCoord.split(',')
+                # print(str(i) + ': ' + strippedCoord)
+                # print(type(splitCoord))
+                # print(splitCoord)
+
+            print(parsedCoords)
+            # print(len(parsedCoords))
