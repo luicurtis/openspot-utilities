@@ -37,8 +37,8 @@ with open(kml_file) as f:
                 splitCoord = coord.strip().split(',')
                 splitCoord.pop(2) # remove useless 0
                 parsedCoords.append({
-                    'long': splitCoord[0],  # first element is long
-                    'lat': splitCoord[1]    # second element is lat
+                    'lat': splitCoord[1],    # second element is lat
+                    'lng': splitCoord[0]     # first element is long
                 })
                 # splittedCoord = strippedCoord.split(',')
                 # print(str(i) + ': ' + strippedCoord)
