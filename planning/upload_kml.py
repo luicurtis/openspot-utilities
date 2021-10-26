@@ -35,36 +35,43 @@ with open(kml_file) as f:
         for spot in module.Placemark:
             totalSpots += 1
             spotID = spot.name.text
-            spotCoords = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split('\n')
 
-            # clean up parsed data
-            # remove first and last index since it is empty text
-            spotCoords.pop(0)
-            spotCoords.pop(5)
-
-            polygons = []
-            for i,coord in enumerate(spotCoords):
-                splitCoord = coord.strip().split(',')
-                splitCoord.pop(2) # remove useless 0
-                polygons.append({
-                    'lat': float(splitCoord[1]),    # second element is lat
-                    'lng': float(splitCoord[0])     # first element is long
-                })
-
-            # insert spot record into db
-            spotIdentifier = {  'parkingLotName' : parkingLotName,
-                                'modID': int(modID),
-                                'spotNum': int(spotID)}
-
-            spotRecord = {  'parkingLotName' : parkingLotName,
-                            'modID': int(modID),
-                            'spotNum': int(spotID),
-                            'occupied': False,
-                            'polygons': polygons
-                            }
+            try:
+                spotCoords = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split('\n')
             
-            spots_db.update_one(spotIdentifier, {"$set":spotRecord}, upsert=True)
+                # clean up parsed data
+                # remove first and last index since it is empty text
+                spotCoords.pop(0)
+                spotCoords.pop(5)
 
+                polygons = []
+                for i,coord in enumerate(spotCoords):
+                    splitCoord = coord.strip().split(',')
+                    splitCoord.pop(2) # remove useless 0
+                    polygons.append({
+                        'lat': float(splitCoord[1]),    # second element is lat
+                        'lng': float(splitCoord[0])     # first element is long
+                    })
+
+                # insert spot record into db
+                spotIdentifier = {  'parkingLotName' : parkingLotName,
+                                    'modID': int(modID),
+                                    'spotNum': int(spotID)}
+
+                spotRecord = {  'parkingLotName' : parkingLotName,
+                                'modID': int(modID),
+                                'spotNum': int(spotID),
+                                'occupied': False,
+                                'polygons': polygons
+                                }
+                
+                spots_db.update_one(spotIdentifier, {"$set":spotRecord}, upsert=True)
+
+            except:
+                # Encountered a pin that represents where the module is placed
+                # print('this is a pin')
+                continue
+            
         # insert module record into db
         moduleIdentifier = {'parkingLotName' : parkingLotName,
                             'modID': int(modID)}
