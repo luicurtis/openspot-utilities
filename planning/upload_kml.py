@@ -21,6 +21,8 @@ MongoDBclient = pymongo.MongoClient("mongodb+srv://root:root@cluster0.56jzb.mong
 db_name = MongoDBclient["Backend"]
 spots_db = db_name["spots"]
 module_db = db_name["module"]
+parkingLot_db = db_name["parking_lot"]
+
 
 with open(kml_file) as f:
     doc = parser.parse(f).getroot()
@@ -36,50 +38,102 @@ with open(kml_file) as f:
             totalSpots += 1
             spotID = spot.name.text
 
-            try:
-                spotCoords = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split('\n')
-            
-                # clean up parsed data
-                # remove first and last index since it is empty text
-                spotCoords.pop(0)
-                spotCoords.pop(5)
+            # check if the place mark is the panning limit
+            if spotID == "Panning Limit":
+                print("found panning limit")
+                try:
+                    limits = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split('\n')
 
-                polygons = []
-                for i,coord in enumerate(spotCoords):
-                    splitCoord = coord.strip().split(',')
-                    splitCoord.pop(2) # remove useless 0
-                    polygons.append({
-                        'lat': float(splitCoord[1]),    # second element is lat
-                        'lng': float(splitCoord[0])     # first element is long
-                    })
+                    # clean up parsed data
+                    # remove first and last index since it is empty text
+                    limits.pop(0)
+                    limits.pop(5)
+                    polygons = []
 
-                # insert spot record into db
-                spotIdentifier = {  'parkingLotName' : parkingLotName,
-                                    'modID': int(modID),
-                                    'spotNum': int(spotID)}
+                    for i,coord in enumerate(limits):
+                        splitCoord = coord.strip().split(',')
+                        splitCoord.pop(2) # remove useless 0
+                        polygons.append({
+                            'lat': float(splitCoord[1]),    # second element is lat
+                            'lng': float(splitCoord[0])     # first element is long
+                        })
 
-                spotRecord = {  'parkingLotName' : parkingLotName,
-                                'modID': int(modID),
-                                'spotNum': int(spotID),
-                                'occupied': False,
-                                'polygons': polygons
-                                }
+                    # extract most north, east, south, west coordinates
+                    bounds = {
+                        'north': polygons[0]['lat'],
+                        'east': polygons[2]['lng'],
+                        'south': polygons[2]['lat'],
+                        'west': polygons[0]['lng'],
+                    }
+
+                    center = {
+                        'lat': 	(bounds['north']+bounds['south']) / 2,
+                        'lng': 	(bounds['east']+bounds['west']) / 2
+                    }
+
+                    print(bounds)                    
+                    print(center)
+                    parkingLotIdentifier = {'parkingLotName' : parkingLotName}
+
+                    parkingLotRecord = {'parkingLotName' : parkingLotName,
+                                        'bounds' : bounds,
+                                        'center' : center,
+                                        } 
+
+                    parkingLot_db.update_one(parkingLotIdentifier, {"$set":parkingLotRecord}, upsert=True)
+                    
+                except:
+                    # Encountered a pin that represents where the module is placed
+                    print('this is a pin')
+                    continue
+            else:
+                try:
+                    spotCoords = spot.Polygon.outerBoundaryIs.LinearRing.coordinates.text.split('\n')
                 
-                spots_db.update_one(spotIdentifier, {"$set":spotRecord}, upsert=True)
+                    # clean up parsed data
+                    # remove first and last index since it is empty text
+                    spotCoords.pop(0)
+                    spotCoords.pop(5)
 
-            except:
-                # Encountered a pin that represents where the module is placed
-                # print('this is a pin')
-                continue
+                    polygons = []
+                    for i,coord in enumerate(spotCoords):
+                        splitCoord = coord.strip().split(',')
+                        splitCoord.pop(2) # remove useless 0
+                        polygons.append({
+                            'lat': float(splitCoord[1]),    # second element is lat
+                            'lng': float(splitCoord[0])     # first element is long
+                        })
+
+                    # insert spot record into db
+                    spotIdentifier = {  'parkingLotName' : parkingLotName,
+                                        'modID': int(modID),
+                                        'spotNum': int(spotID)}
+
+                    spotRecord = {  'parkingLotName' : parkingLotName,
+                                    'modID': int(modID),
+                                    'spotNum': int(spotID),
+                                    'occupied': False,
+                                    'polygons': polygons
+                                    }
+                    
+                    spots_db.update_one(spotIdentifier, {"$set":spotRecord}, upsert=True)
+
+                except:
+                    # Encountered a pin that represents where the module is placed
+                    print('this is a pin')
+                    totalSpots -= 1
+                    continue
             
         # insert module record into db
-        moduleIdentifier = {'parkingLotName' : parkingLotName,
-                            'modID': int(modID)}
+        if modID != "Panning Limit":
+            moduleIdentifier = {'parkingLotName' : parkingLotName,
+                                'modID': int(modID)}
 
-        moduleRecord = {'parkingLotName' : parkingLotName,
-                        'ledColour' : 0,
-                        'numSpotsFull': 0,
-                        'totalSpots' : totalSpots,
-                        'modID': int(modID)}
-
-        module_db.update_one(moduleIdentifier, {"$set":moduleRecord}, upsert=True)
+            moduleRecord = {'parkingLotName' : parkingLotName,
+                            'ledColour' : 0,
+                            'numSpotsFull': 0,
+                            'totalSpots' : totalSpots,
+                            'modID': int(modID)
+                            }
+            module_db.update_one(moduleIdentifier, {"$set":moduleRecord}, upsert=True)
+        
