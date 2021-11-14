@@ -136,4 +136,5 @@ with open(kml_file) as f:
                             'modID': int(modID)
                             }
             module_db.update_one(moduleIdentifier, {"$set":moduleRecord}, upsert=True)
-        
+
+MongoDBclient.close()
