@@ -45,9 +45,6 @@ class database:
             coord = bbox["coordinates"]
             newSpot = ([coord[0][1], coord[0][0]], [coord[2][1], coord[2][0]])
             refSpots.append(newSpot)
-            self.spots_db.update_one({"modID" : modID, "spotNum" : spotnum, "parkingLotName":parking_lot_name},
-                                    {"$set":{"modID" : modID, "spotNum" : spotnum, "occupied" : False, "parkingLotName":parking_lot_name}}, 
-                                    upsert=True)
 
         dict_insert = {"parkingLotName" : parking_lot_name,
                         "modID" : modID,
