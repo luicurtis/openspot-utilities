@@ -83,13 +83,17 @@ class CoordinatesGenerator:
         coordinates = np.array(self.coordinates)
         # height, width = self.image.shape[:2]
 
+        # TODO: Add functinality to  determine the bottom left, etc most point
+        #       to not require to go in order of clicking (top left, top right, etc...)
+        # maybe: https://stackoverflow.com/questions/67822179/find-polygon-top-left-top-right-bottom-right-and-bottom-left-points
+
         self.output.write("-\n          id: " + str(self.ids) + "\n          coordinates: [" +
                           "[" + str(self.coordinates[0][0]) + "," + str(self.coordinates[0][1]) + "]," +
                           "[" + str(self.coordinates[1][0]) + "," + str(self.coordinates[1][1]) + "]," +
                           "[" + str(self.coordinates[2][0]) + "," + str(self.coordinates[2][1]) + "]," +
                           "[" + str(self.coordinates[3][0]) + "," + str(self.coordinates[3][1]) + "]]\n")
 
-        draw_contours(self.image, coordinates, str(self.ids + 1), COLOR_WHITE)
+        draw_contours(self.image, coordinates, str(self.ids), COLOR_WHITE)
 
         for i in range(0, 4):
             self.coordinates.pop()
