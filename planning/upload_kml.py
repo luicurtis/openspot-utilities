@@ -125,7 +125,7 @@ with open(kml_file) as f:
                     continue
             
         # insert module record into db
-        if modID != "Panning Limit":
+        if modID != "Panning Limit" and modID != "Light Poles":
             moduleIdentifier = {'parkingLotName' : parkingLotName,
                                 'modID': int(modID)}
 
@@ -137,4 +137,5 @@ with open(kml_file) as f:
                             }
             module_db.update_one(moduleIdentifier, {"$set":moduleRecord}, upsert=True)
 
+print("Success! KML details uploaded to the database.")
 MongoDBclient.close()
