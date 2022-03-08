@@ -1,6 +1,7 @@
 # openspot-utilities
+![image](https://user-images.githubusercontent.com/30327342/157311721-1d177228-47af-4c70-a601-8705c5facc02.png)
 
-Repository used by technicians during the installation process of the module. 
+Application used by technicians during the installation process of the module. 
 
 # db_upload:
 
